@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shader xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <attribute>
+    <type>vec4</type>
+    <name>color</name>
+  </attribute>
+  <attribute>
+    <type>vec4</type>
+    <name>vertex</name>
+  </attribute>
+  <uniform>
+    <type>mat4</type>
+    <name>transform</name>
+  </uniform>
+  <uniform>
+    <type>sampler2D</type>
+    <name>tex0</name>
+  </uniform>
+  <vertexprogram>
+    void main()
+    {
+      gl_Position = transform * vec4(vertex.xy, 0.0, 1.0);
+      gl_FrontColor = color;
+      gl_TexCoord[0].st = vertex.zw;
+    }
+  </vertexprogram>
+  <fragmentprogram>
+    void main()
+    {
+      vec4 cc = texture2D(tex0, gl_TexCoord[0].st);
+      gl_FragColor = vec4(cc.rgb * gl_Color.rgb, cc.a) * gl_Color.a;
+    }
+  </fragmentprogram>
+</shader>

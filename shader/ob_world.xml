@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shader xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <attribute>
+    <type>vec2</type>
+    <name>texcoord</name>
+  </attribute>
+  <attribute>
+    <type>vec3</type>
+    <name>vertex</name>
+  </attribute>
+  <uniform>
+    <type>sampler3D</type>
+    <name>decal</name>
+  </uniform>
+  <uniform>
+    <type>vec2</type>
+    <name>decal_scale</name>
+  </uniform>
+  <uniform>
+    <type>vec3</type>
+    <name>decal_0_color</name>
+  </uniform>
+  <uniform>
+    <type>vec4</type>
+    <name>decal_0_params</name>
+  </uniform>
+  <uniform>
+    <type>vec4</type>
+    <name>decal_1_params</name>
+  </uniform>
+  <uniform>
+    <type>vec3</type>
+    <name>light_ambient</name>
+  </uniform>
+  <uniform>
+    <type>vec3</type>
+    <name>light_diffuse</name>
+  </uniform>
+  <uniform>
+    <type>vec3</type>
+    <name>light_dir</name>
+  </uniform>
+  <uniform>
+    <type>mat4</type>
+    <name>modelview</name>
+  </uniform>
+  <uniform>
+    <type>vec3</type>
+    <name>noise_scale</name>
+  </uniform>
+  <uniform>
+    <type>mat4</type>
+    <name>transform</name>
+  </uniform>
+  <uniform>
+    <type>sampler2D</type>
+    <name>tex0</name>
+  </uniform>
+  <uniform>
+    <type>vec3</type>
+    <name>terrain_0_color_0</name>
+  </uniform>
+  <uniform>
+    <type>vec3</type>
+    <name>terrain_0_color_1</name>
+  </uniform>
+  <uniform>
+    <type>vec3</type>
+    <name>terrain_1_color_0</name>
+  </uniform>
+  <uniform>
+    <type>vec3</type>
+    <name>terrain_1_color_1</name>
+  </uniform>
+  <uniform>
+    <type>vec3</type>
+    <name>terrain_2_color_0</name>
+  </uniform>
+  <uniform>
+    <type>vec3</type>
+    <name>terrain_2_color_1</name>
+  </uniform>
+  <uniform>
+    <type>vec3</type>
+    <name>terrain_3_color_0</name>
+  </uniform>
+  <uniform>
+    <type>vec3</type>
+    <name>terrain_3_color_1</name>
+  </uniform>
+  <uniform>
+    <type>sampler3D</type>
+    <name>volume0</name>
+  </uniform>
+  <uniform>
+    <type>sampler3D</type>
+    <name>volume1</name>
+  </uniform>
+  <vertexprogram>
+    varying vec3 rver;
+    void main()
+    {
+      rver = vertex.xyz;
+      gl_Position = transform * vec4(rver, 1.0);
+      gl_TexCoord[0].st = texcoord;
+    }
+  </vertexprogram>
+  <fragmentprogram>
+    varying vec3 rver;
+    vec3 noise_read2(float na1, float na2, vec3 ca1, vec3 ca2)
+    {
+      return mix(ca1, ca2, 0.5 * (na1 + na2));
+    }
+    float noise_weight3(float na1, float na2, float na3)
+    {
+      return 0.5 * (na1 + na2 + na3);
+    }
+    vec3 noise_read3(float na1, float na2, float na3, vec3 ca1, vec3 ca2)
+    {
+      return mix(ca1, ca2, noise_weight3(na1, na2, na3));
+    }
+    void main()
+    {
+      vec4 map = texture2D(tex0, gl_TexCoord[0].st);
+      vec4 noise_a = texture3D(volume0, rver * noise_scale.x);
+      vec4 noise_b = texture3D(volume0, rver * noise_scale.y);
+      vec4 noise_c = texture3D(volume0, rver * noise_scale.z);
+
+      float lowlands_ht = noise_weight3(noise_a.y, noise_b.y, noise_c.y);
+      vec3 lowlands = mix(terrain_1_color_0, terrain_1_color_1, lowlands_ht);
+      vec3 cc;
+
+      float water_wt = clamp(map.a * 2.0, 0.0, 1.0);
+      if(water_wt &lt; 1.0)
+      {
+        float water_ht = 0.5 * (noise_b.x + noise_c.x);
+        vec3 water = mix(terrain_0_color_0, terrain_0_color_1, water_ht);
+        float coast_ht = (water_wt - 0.8) * 5.0;
+        if(coast_ht &lt; 0.0)
+        {
+          cc = water;
+        }
+        else
+        {
+          if(mix(lowlands_ht, water_ht, coast_ht) &lt; 0.5)
+          {
+            cc = water;
+          }
+          else
+          {
+            cc = lowlands;
+          }
+        }
+      }
+      else
+      {
+        float mountain_wt = map.a * 2.0 - 1.0;
+        vec3 mountains = noise_read3(noise_a.z, noise_b.z, noise_c.z, terrain_2_color_0, terrain_2_color_1);
+        cc = mix(lowlands, mountains, mountain_wt);
+      }
+
+      vec4 nn = vec4(map.xyz * 2.0 - 1.0, 0.0);
+      vec3 arctic = noise_read3(noise_a.w, noise_b.w, noise_c.w, terrain_3_color_0, terrain_3_color_1);
+      cc = mix(cc, arctic, nn.y * nn.y * water_wt); // This is genius, use normal Y coordinate as 'arctic'
+
+      float lightmul = 1.0 - clamp(dot(normalize((modelview * nn).xyz), light_dir), 0.0, 1.0);
+      lightmul = 1.0 - lightmul * lightmul;
+
+      vec2 dstr = texture3D(decal, (rver * decal_scale.y) + 0.5).ra;
+      vec4 vol = 0.5 * (texture3D(volume1, rver * noise_scale.x) + texture3D(volume1, rver * noise_scale.y));
+
+      float city_level = smoothstep(decal_0_params.x, decal_0_params.y, dstr.x * vol.a * water_wt);
+      cc = mix(cc, decal_0_color * (1.0 + smoothstep(decal_0_params.z, 0.0, lightmul) * decal_0_params.w), city_level);
+
+      float rubble_level = smoothstep(decal_1_params.x, decal_1_params.y, dstr.y * water_wt);
+      cc = mix(cc, vol.rgb * (1.0 + smoothstep(decal_1_params.z, 0.0, lightmul) * decal_1_params.w), rubble_level);
+
+      gl_FragColor = vec4((light_ambient + light_diffuse * lightmul) * cc, 1.0); 
+    }
+  </fragmentprogram>
+</shader>

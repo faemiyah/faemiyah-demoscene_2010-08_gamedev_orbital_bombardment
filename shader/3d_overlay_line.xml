@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shader xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <version>150</version>
+  <attribute>
+    <type>vec4</type>
+    <name>color</name>
+  </attribute>
+  <attribute>
+    <type>vec2</type>
+    <name>texcoord</name>
+  </attribute>
+  <attribute>
+    <type>vec3</type>
+    <name>vertex1</name>
+  </attribute>
+  <attribute>
+    <type>vec3</type>
+    <name>vertex2</name>
+  </attribute>
+  <uniform>
+    <type>sampler2D</type>
+    <name>tex0</name>
+  </uniform>
+  <uniform>
+    <type>mat4</type>
+    <name>transform</name>
+  </uniform>
+  <vertexprogram>
+    out VertexData
+    {
+      vec2 texcoord;
+      vec4 color;
+      vec4 vertex1;
+      vec4 vertex2;
+    } c_out;
+    void main()
+    {
+      c_out.texcoord = texcoord;
+      c_out.color = color;
+      c_out.vertex1 = transform * vec4(vertex1.xyz, 1.0);
+      c_out.vertex2 = transform * vec4(vertex2.xyz, 1.0);
+    }
+  </vertexprogram>
+  <geometryprogram>
+    layout(points) in;
+    layout(line_strip, max_vertices=2) out;
+    in VertexData
+    {
+      vec2 texcoord;
+      vec4 color;
+      vec4 vertex1;
+      vec4 vertex2;
+    } c_in[1];
+    out VertexData
+    {
+      vec2 texcoord;
+      vec4 color;
+    } c_out;
+    void main()
+    {
+      vec2 tt = c_in[0].texcoord;
+      vec4 cc = c_in[0].color;
+      vec4 p1 = c_in[0].vertex1;
+      vec4 p2 = c_in[0].vertex2;
+      gl_Position = p1;
+      c_out.texcoord = vec2(tt.x, 0.5);
+      c_out.color = cc;
+      EmitVertex();
+      gl_Position = p2;
+      c_out.texcoord = vec2(tt.y, 0.5);
+      c_out.color = cc;
+      EmitVertex();
+      EndPrimitive();
+    }
+  </geometryprogram>
+  <fragmentprogram>
+    in VertexData
+    {
+      vec2 texcoord;
+      vec4 color;
+    } c_in;
+    void main()
+    {
+      vec4 cc = texture2D(tex0, c_in.texcoord);
+      c_out = vec4(cc.rgb * c_in.color.rgb, cc.a) * c_in.color.a;
+    }
+  </fragmentprogram>
+</shader>

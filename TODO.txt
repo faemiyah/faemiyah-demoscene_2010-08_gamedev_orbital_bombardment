@@ -1,0 +1,48 @@
+	Bugit
+
+- Jenkkinäppis aktiivinen. Onko tällä väliä?
+- Railgun missaa toisinaan siloja [ultraharvinainen, vaatii low fps tjsp?]
+
+	Featuret
+
+- Optionsissa täytyy sanoa että RESTART TO APPLY SETTINGS
+
+	Äänet
+	
+- Räjähdykset [Pui]
+- Tihenevä piipitys ennakoimaan nuken osumaa [Pui/Warma]
+- Nukeen vielä lisää munaa
+- Musiikkiin häiriötä tai volyymiä pois kun NUKE [Trilkk]
+
+	Ohjeet Hannulle (CDR -> sprite)
+
+Spriten pitää olla kahden potensseja dimensioistaan, yleensä billboardit ovat 256 meillä.
+1. Exporttaa PNG:ksi, laita reilusti kokoa.
+2. Avaa PNG ja piirrä sen päälle asianmukainen maski, mielellään antialiasing tai feather.
+
+Vaihtoehto A, värisprite.
+3. Resample oikeaan kokoon.
+4. Säilö kuva, käytä maskia läpinäkyvyytenä.
+
+Vaihtoehto B, väritön sprite.
+3. Säilö kuva harmaasävykuvana.
+4. Tee uusi kuva jonka dimensiot ovat samat kuin säilötyn kuvan. Valitse puhdas valkoinen pohjaväri.
+5. Mask -> load from disk -> säilötty kuva.
+6. Resample oikeaan kokoon.
+7. Säilö kuva, käytä maskia läpinäkyvyytenä.
+
+Huomioitavaa:
+- Tatun billboardengine ei ole pixel-perfect kuvan laidoilla. Jos spriteä pyöritetään tai se ei ole symmetrinen kaikkien akseleiden suhteen, on välttämätöntä että valmiin spriten laidoilla on 1-2px reunus jonka läpinäkyvyys on 100%.
+- Jos säilöt kuvan ja maski on aliasoitu, ota huomioon että spriteen vuotaa värejä maskin reunoilta.
+
+Näissä tapauksissa käytetään vaihtoehtoa:
+
+Vaihtoehto C, värillinen sprite kunnolla.
+1. Suunnittele maskisprite olemassaolevalle spritelle.
+2. Exporttaa maskisprite, laita reilusti kokoa.
+3. Käyttäen hyväksi tätä suoraan tai sen muotoja, joko muodosta maski ja säilö se harmaasävykyvana tai jos olit noheva, säilö maskisprite harmaasävykuvana.
+4. Piirrä alkuperäinen sprite siten, etä värialueet ovat joko tasaisia tai liukuja liukuja kaikilla kuvan reunoilla ja huomioi että mikään kuvan laidoista ei ole täysin spriten laidoissa.
+5. Exporttaa.
+6. Lataa exportattuun kuvaan äsken suunnittelemasi maskisprite.
+7. Resample oikeaan kokoon.
+8. Säilö kuva, käytä maskia läpinäkyvyytenä.

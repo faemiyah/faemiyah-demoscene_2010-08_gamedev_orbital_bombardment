@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shader xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <version>150</version>
+  <attribute>
+    <type>vec4</type>
+    <name>color</name>
+  </attribute>
+  <attribute>
+    <type>vec4</type>
+    <name>texcoord</name>
+  </attribute>
+  <attribute>
+    <type>vec4</type>
+    <name>vertex</name>
+  </attribute>
+  <uniform>
+    <type>vec3</type>
+    <name>billboard_params</name>
+  </uniform>
+  <uniform>
+    <type>mat4</type>
+    <name>modelview</name>
+  </uniform>
+  <uniform>
+    <type>mat4</type>
+    <name>projection</name>
+  </uniform>
+  <uniform>
+    <type>sampler2D</type>
+    <name>tex0</name>
+  </uniform>
+  <uniform>
+    <type>mat4</type>
+    <name>transform</name>
+  </uniform>
+  <vertexprogram>
+    out VertexData
+    {
+      vec4 texcoord;
+      vec4 color;
+      vec2 pointSize;
+    } c_out;
+    vec2 calculate_point_size(float psize, vec4 pos)
+    {
+      vec4 proj = projection * vec4(psize, psize, min((modelview * pos).z, 0), 1.0);
+      vec2 ret = proj.xy / proj.w;
+      float ps = max(ret.x, ret.y);
+      return (ret / ps) * clamp(ps, billboard_params.s, billboard_params.t);
+    }
+    void main()
+    {
+      vec4 proj = vec4(vertex.xyz, 1.0);
+      gl_Position = transform * proj;
+      c_out.texcoord = texcoord;
+      c_out.color = color;
+      c_out.pointSize = calculate_point_size(vertex.w * billboard_params.z, proj);
+    }
+  </vertexprogram>
+  <geometryprogram>
+    layout(points) in;
+    layout(triangle_strip, max_vertices=4) out;
+    in VertexData
+    {
+      vec4 texcoord;
+      vec4 color;
+      vec2 pointSize;
+    } c_in[1];
+    out VertexData
+    {
+      vec2 texcoord;
+      vec4 color;
+    } c_out;
+    void main()
+    {
+      vec3 pp = gl_in[0].gl_Position.xyz / gl_in[0].gl_Position.w;
+      vec4 tt = c_in[0].texcoord;
+      vec4 cc = c_in[0].color;
+      vec2 ps = c_in[0].pointSize;
+      gl_Position = vec4(pp.xy + ps * vec2(-tt.p - tt.s, -tt.t - tt.q), pp.z, 1.0);
+      c_out.texcoord = vec2(0.0, 0.0);
+      c_out.color = cc;
+      EmitVertex();
+      gl_Position = vec4(pp.xy + ps * vec2(tt.s - tt.p, tt.t - tt.q), pp.z, 1.0);
+      c_out.texcoord = vec2(1.0, 0.0);
+      c_out.color = cc;
+      EmitVertex();
+      gl_Position = vec4(pp.xy + ps * vec2(tt.p - tt.s, tt.q - tt.t), pp.z, 1.0);
+      c_out.texcoord = vec2(0.0, 1.0);
+      c_out.color = cc;
+      EmitVertex();
+      gl_Position = vec4(pp.xy + ps * vec2(tt.s + tt.p, tt.t + tt.q), pp.z, 1.0);
+      c_out.texcoord = vec2(1.0, 1.0);
+      c_out.color = cc;
+      EmitVertex();
+      EndPrimitive();
+    }
+  </geometryprogram>
+  <fragmentprogram>
+    in VertexData
+    {
+      vec2 texcoord;
+      vec4 color;
+    } c_in;
+    void main()
+    {
+      vec4 cc = texture2D(tex0, c_in.texcoord);
+      c_out = vec4(cc.rgb * c_in.color.rgb, cc.a) * c_in.color.a;
+    }
+  </fragmentprogram>
+</shader>

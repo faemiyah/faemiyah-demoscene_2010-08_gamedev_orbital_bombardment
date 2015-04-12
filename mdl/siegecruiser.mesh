@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<meta-mesh xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <scale>
+    <center>0</center>
+    <into>1</into>
+    <x>0.9</x>
+    <y>0.9</y>
+    <z>0.9</z>
+  </scale>
+  <mesh>
+    <filename>siegecruiser_0.mesh</filename>
+  </mesh>
+  <mesh>
+    <filename>siegecruiser_1.mesh</filename>
+  </mesh>
+  <mesh>
+    <filename>siegecruiser_2.mesh</filename>
+  </mesh>
+  <mesh>
+    <filename>siegecruiser_3.mesh</filename>
+  </mesh>
+  <mesh>
+    <filename>siegecruiser_4.mesh</filename>
+  </mesh>
+  <mesh>
+    <filename>siegecruiser_5.mesh</filename>
+  </mesh>
+  <mesh>
+    <filename>siegecruiser_6.mesh</filename>
+  </mesh>
+  <submesh>
+    <filename>siegecruiser-0.mesh</filename>
+  </submesh>
+  <submesh>
+    <filename>siegecruiser-1.mesh</filename>
+  </submesh>
+  <submesh>
+    <filename>siegecruiser-2.mesh</filename>
+  </submesh>
+  <submesh>
+    <filename>siegecruiser-3.mesh</filename>
+  </submesh>
+  <submesh>
+    <filename>siegecruiser-4.mesh</filename>
+  </submesh>
+</meta-mesh>

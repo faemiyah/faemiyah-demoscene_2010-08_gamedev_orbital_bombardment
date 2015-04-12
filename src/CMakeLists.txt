@@ -1,0 +1,22 @@
+include_directories("${PROJECT_SOURCE_DIR}")
+include_directories("${PROJECT_SOURCE_DIR}/src")
+
+set(SOURCE_FILES data/data_generic.cpp data/log.cpp data/xml_file.cpp gfx/attribute.cpp gfx/buffer.cpp gfx/color.cpp gfx/color_gradient.cpp gfx/entity.cpp gfx/entity_camera.cpp gfx/entity_object.cpp gfx/entity_object_overlay.cpp gfx/font.cpp gfx/gfx_generic.cpp gfx/glyph.cpp gfx/height_map_ball.cpp gfx/image.cpp gfx/image_jpeg.cpp gfx/image_png.cpp gfx/lod.cpp gfx/lod_icosahedron.cpp gfx/mesh.cpp gfx/mesh_animated.cpp gfx/mesh_ball.cpp gfx/mesh_icosahedron.cpp gfx/mesh_planet.cpp gfx/mesh_static.cpp gfx/shader.cpp gfx/surface.cpp gfx/surface_base.cpp gfx/surface_fbo.cpp gfx/surface_screen.cpp gfx/texture.cpp gfx/texture_2d.cpp gfx/texture_3d.cpp gfx/volume.cpp gfx/volume_base.cpp math/random.cpp snd/audio_device.cpp snd/sample.cpp snd/snd_generic.cpp snd/stream.cpp snd/source.cpp snd/source_bank.cpp thr/dispatch.cpp thr/thr_generic.cpp thr/thread_storage.cpp ui/console.cpp ui/console_state.cpp ui/fps_counter.cpp ui/input_line.cpp ui/text_area.cpp ui/text_rect.cpp ui/text_row.cpp ui/text_word.cpp ui/ui_generic.cpp ui/ui_stack.cpp ui/ui_state.cpp ob_appearing_string.cpp ob_atmosphere.cpp ob_billboard.cpp ob_bullet_flak.cpp ob_bullet_railgun.cpp ob_city.cpp ob_collision_element.cpp ob_console.cpp ob_console_state.cpp ob_fade.cpp ob_game.cpp ob_game_view.cpp ob_globals.cpp ob_height_map_planet.cpp ob_high_score_state.cpp ob_high_scores.cpp ob_lifetime.cpp ob_main.cpp ob_menu.cpp ob_menu_state.cpp ob_missile.cpp ob_missile_anti.cpp ob_missile_nuke.cpp ob_octree.cpp ob_particle.cpp ob_planet.cpp ob_population_map.cpp ob_settings.cpp ob_space_element.cpp ob_silo.cpp ob_surface_element.cpp ob_visualization.cpp ob_visualization_city.cpp ob_visualization_distort.cpp ob_visualization_flak.cpp ob_visualization_mesh.cpp ob_visualization_nuke.cpp ob_visualization_orbit.cpp ob_visualization_railgun.cpp ob_visualization_sun.cpp)
+
+if (APPLE)
+  list(APPEND SOURCE_FILES SDLMain.m)
+endif (APPLE)
+
+add_executable(orbital_bombardment ${SOURCE_FILES})
+target_link_libraries(orbital_bombardment ${BOOST_FILESYSTEM_LIBRARY})
+target_link_libraries(orbital_bombardment ${BOOST_PROGRAM_OPTIONS_LIBRARY})
+target_link_libraries(orbital_bombardment ${BOOST_SYSTEM_LIBRARY})
+target_link_libraries(orbital_bombardment ${BOOST_THREAD_LIBRARY})
+target_link_libraries(orbital_bombardment ${GLEW_LIBRARY})
+target_link_libraries(orbital_bombardment ${JPEG_LIBRARY})
+target_link_libraries(orbital_bombardment ${OGG_LIBRARY})
+target_link_libraries(orbital_bombardment ${OPENAL_LIBRARY})
+target_link_libraries(orbital_bombardment ${OPENGL_gl_LIBRARY})
+target_link_libraries(orbital_bombardment ${PNG_LIBRARY})
+target_link_libraries(orbital_bombardment ${SDL_LIBRARY})
+target_link_libraries(orbital_bombardment ${VORBIS_LIBRARY})

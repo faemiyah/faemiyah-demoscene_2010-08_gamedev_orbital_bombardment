@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shader xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <attribute>
+    <type>vec4</type>
+    <name>color</name>
+  </attribute>
+  <attribute>
+    <type>vec2</type>
+    <name>texcoord</name>
+  </attribute>
+  <attribute>
+    <type>vec3</type>
+    <name>vertex</name>
+  </attribute>
+  <uniform>
+    <type>vec4</type>
+    <name>sun_params</name>
+  </uniform>
+  <uniform>
+    <type>mat4</type>
+    <name>transform</name>
+  </uniform>
+  <uniform>
+    <type>sampler2D</type>
+    <name>tex0</name>
+  </uniform>
+  <vertexprogram>
+    void main()
+    {
+      gl_Position = transform * vec4(vertex.xyz, 1.0);
+      gl_FrontColor = color;
+      gl_TexCoord[0].st = texcoord;
+    }
+  </vertexprogram>
+  <fragmentprogram>
+    void main()
+    {
+      vec2 texcorrected = gl_TexCoord[0].st - vec2(0.5, 0.5);
+      vec4 outsidenoise = texture2D(tex0, texcorrected*0.05 - sun_params.w * 0.95*normalize(texcorrected));
+      float len = length(texcorrected);
+      float colmul = max(1.0 - max((len - 0.25) / 0.25, 0.0),0.0);
+      colmul = colmul*colmul;
+      gl_FragColor = vec4(gl_Color.rgb, 1.0) * (colmul * length(outsidenoise));
+    }
+  </fragmentprogram>
+</shader>

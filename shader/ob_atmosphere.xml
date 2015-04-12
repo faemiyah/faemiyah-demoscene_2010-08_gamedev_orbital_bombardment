@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shader xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <attribute>
+    <type>vec4</type>
+    <name>color</name>
+  </attribute>
+  <attribute>
+    <type>vec3</type>
+    <name>normal</name>
+  </attribute>
+  <attribute>
+    <type>vec3</type>
+    <name>vertex</name>
+  </attribute>
+  <uniform>
+    <type>vec3</type>
+    <name>atmosphere_step</name>
+  </uniform>
+  <uniform>
+    <type>vec3</type>
+    <name>light_ambient</name>
+  </uniform>
+  <uniform>
+    <type>vec3</type>
+    <name>light_diffuse</name>
+  </uniform>
+  <uniform>
+    <type>vec3</type>
+    <name>light_dir</name>
+  </uniform>
+  <uniform>
+    <type>mat4</type>
+    <name>modelview</name>
+  </uniform>
+  <uniform>
+    <type>mat4</type>
+    <name>transform</name>
+  </uniform>
+  <uniform>
+    <type>vec3</type>
+    <name>view_pos</name>
+  </uniform>
+  <vertexprogram>
+    varying vec3 nn;
+    varying vec3 vv;
+    void main()
+    {
+      vec4 rpos = vec4(vertex, 1.0);
+      gl_Position = transform * rpos;
+      gl_FrontColor = color;
+      nn = (modelview * vec4(normal, 0.0)).xyz;
+      vv = view_pos - (modelview * rpos).xyz;
+    }
+  </vertexprogram>
+  <fragmentprogram>
+    varying vec3 nn;
+    varying vec3 vv;
+    void main()
+    {
+      vec3 nnn = normalize(nn);
+      vec3 vvv = normalize(vv);
+      vec3 lll = normalize(-reflect(light_dir, nnn));
+      float specular = max(dot(lll, vvv), 0.0);
+      specular = pow(specular, 2.0);
+      float lightmul = max(dot(nnn, normalize(vv)), 0.0);
+      lightmul = smoothstep(atmosphere_step.x, atmosphere_step.y, lightmul) - smoothstep(atmosphere_step.y, atmosphere_step.z, lightmul);
+      lightmul = specular * lightmul;
+      gl_FragColor = vec4(gl_Color.rgb * (light_ambient + light_diffuse * lightmul), lightmul) * gl_Color.a;
+    }
+  </fragmentprogram>
+</shader>

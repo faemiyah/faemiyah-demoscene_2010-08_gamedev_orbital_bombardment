@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shader xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <attribute>
+    <type>vec4</type>
+    <name>color</name>
+  </attribute>
+  <attribute>
+    <type>vec4</type>
+    <name>vertex</name>
+  </attribute>
+  <uniform>
+    <type>mat4</type>
+    <name>transform</name>
+  </uniform>
+  <vertexprogram>
+    void main()
+    {
+      gl_Position = transform * vec4(vertex.xy, 0.0, 1.0);
+      gl_FrontColor = color;
+    }
+  </vertexprogram>
+  <fragmentprogram>
+    void main()
+    {
+      gl_FragColor = gl_Color;
+    }
+  </fragmentprogram>
+</shader>

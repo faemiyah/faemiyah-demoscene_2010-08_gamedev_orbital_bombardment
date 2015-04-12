@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shader xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <attribute>
+    <type>vec4</type>
+    <name>color</name>
+  </attribute>
+  <attribute>
+    <type>vec3</type>
+    <name>normal</name>
+  </attribute>
+  <attribute>
+    <type>vec2</type>
+    <name>texcoord</name>
+  </attribute>
+  <attribute>
+    <type>vec3</type>
+    <name>vertex</name>
+  </attribute>
+  <uniform>
+    <type>vec3</type>
+    <name>light_ambient</name>
+  </uniform>
+  <uniform>
+    <type>vec3</type>
+    <name>light_diffuse</name>
+  </uniform>
+  <uniform>
+    <type>vec3</type>
+    <name>light_dir</name>
+  </uniform>
+  <uniform>
+    <type>mat4</type>
+    <name>modelview</name>
+  </uniform>
+  <uniform>
+    <type>mat4</type>
+    <name>transform</name>
+  </uniform>
+  <uniform>
+    <type>sampler2D</type>
+    <name>tex0</name>
+  </uniform>
+  <vertexprogram>
+    varying vec3 nn;
+    void main()
+    {
+      gl_Position = transform * vec4(vertex.xyz, 1.0);
+      gl_FrontColor = color;
+      nn = (modelview * vec4(normal, 0)).xyz;
+      gl_TexCoord[0].st = texcoord;
+    }
+  </vertexprogram>
+  <fragmentprogram>
+    varying vec3 nn;
+    void main()
+    {
+      vec4 cc = texture2D(tex0, gl_TexCoord[0].st);
+      float lightmul = max(dot(normalize(nn), light_dir), 0.0);
+      gl_FragColor = vec4(cc.rgb * gl_Color.rgb * (light_ambient + light_diffuse * lightmul), cc.a) * gl_Color.a;
+    }
+  </fragmentprogram>
+</shader>
