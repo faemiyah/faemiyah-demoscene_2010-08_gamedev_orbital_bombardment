@@ -102,8 +102,10 @@ static const float OB_NUKE_IMPACT_IN_LENGTH = 8.0f*OB_NUKE_SPEED;
 /** Nuke impact in timer. */
 static const float OB_NUKE_IMPACT_IN_2 = OB_NUKE_IMPACT_IN_LENGTH * OB_NUKE_IMPACT_IN_LENGTH;
 
+#if 0
 /** Non-probability multiplier to "impact in" -sound. */
 static const float OB_NUKE_IMPACT_IN_PROB = OB_NUKE_IMPACT_IN_2 * 1000.0f;
+#endif
 
 MissileNuke::MissileNuke(const math::vec3d &pos, const math::vec3d &dir, const math::vec3d &target) :
   Missile(pos, dir, OB_COLLISION_MISSILE_NUKE, OB_FACTION_PLAYER_MISSILE, &(glob->getTextureMissileNuke())),

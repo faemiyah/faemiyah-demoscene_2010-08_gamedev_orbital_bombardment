@@ -22,8 +22,10 @@ static const float OB_FLAK_BULLET_SPEED = 400.0f;
 /* Flak bullet lifetime. */
 static const int OB_FLAK_BULLET_MAX_LIFETIME = 400;
 
+#if defined(OB_FLAK_USE_TARGET)
 /* Flak bullet explode time inaccuracy. */
 static const int OB_FLAK_DEATH_INACCURACY = 10;
+#endif
 
 /* Flak bullet death probability (1 per). */
 //static const int OB_FLAK_DEATH_PROBABILITY = 15;
