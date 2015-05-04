@@ -1,5 +1,5 @@
-cmake_minimum_required(VERSION 2.6)
-
+cmake_minimum_required(VERSION 2.8)
+set(CMAKE_CONFIGURATION_TYPES "Debug;Release")
 project(orbital_bombardment)
 
 enable_language(C)
@@ -24,7 +24,6 @@ output_flags("DEBUG" on)
 
 add_definitions(-DVERSION="r3")
 
-include_directories("${PROJECT_SOURCE_DIR}")
 include_directories("${PROJECT_SOURCE_DIR}/src")
 
 set(BASE_SRC "src/data/circular_buffer.hpp" "src/data/data_generic.cpp" "src/data/generic.hpp" "src/data/loader_settings.hpp" "src/data/log.cpp" "src/data/log.hpp" "src/data/registry.hpp" "src/data/store.hpp" "src/data/xml_file.cpp" "src/data/xml_file.hpp" "src/gfx/array.hpp" "src/gfx/attribute.cpp" "src/gfx/attribute.hpp" "src/gfx/buffer.cpp" "src/gfx/buffer.hpp" "src/gfx/color.cpp" "src/gfx/color.hpp" "src/gfx/color_gradient.cpp" "src/gfx/color_gradient.hpp" "src/gfx/edge.hpp" "src/gfx/entity.cpp" "src/gfx/entity.hpp" "src/gfx/entity_camera.cpp" "src/gfx/entity_camera.hpp" "src/gfx/entity_object.cpp" "src/gfx/entity_object.hpp" "src/gfx/entity_object_overlay.cpp" "src/gfx/entity_object_overlay.hpp" "src/gfx/font.cpp" "src/gfx/font.hpp" "src/gfx/font_loader.hpp" "src/gfx/generic.hpp" "src/gfx/geometry_array.hpp" "src/gfx/gfx_generic.cpp" "src/gfx/glyph.cpp" "src/gfx/glyph.hpp" "src/gfx/height_map_ball.cpp" "src/gfx/height_map_ball.hpp" "src/gfx/image.cpp" "src/gfx/image.hpp" "src/gfx/image_jpeg.cpp" "src/gfx/image_jpeg.hpp" "src/gfx/image_png.cpp" "src/gfx/image_png.hpp" "src/gfx/light_directional.hpp" "src/gfx/lod.cpp" "src/gfx/lod.hpp" "src/gfx/lod_icosahedron.cpp" "src/gfx/lod_icosahedron.hpp" "src/gfx/mesh.cpp" "src/gfx/mesh.hpp" "src/gfx/mesh_animated.cpp" "src/gfx/mesh_animated.hpp" "src/gfx/mesh_ball.cpp" "src/gfx/mesh_ball.hpp" "src/gfx/mesh_icosahedron.cpp" "src/gfx/mesh_icosahedron.hpp" "src/gfx/mesh_loader.hpp" "src/gfx/mesh_planet.cpp" "src/gfx/mesh_planet.hpp" "src/gfx/mesh_static.cpp" "src/gfx/mesh_static.hpp" "src/gfx/point_sprite.hpp" "src/gfx/point_sprite_array.hpp" "src/gfx/shader.cpp" "src/gfx/shader.hpp" "src/gfx/surface.cpp" "src/gfx/surface.hpp" "src/gfx/surface_base.cpp" "src/gfx/surface_base.hpp" "src/gfx/surface_fbo.cpp" "src/gfx/surface_fbo.hpp" "src/gfx/surface_screen.cpp" "src/gfx/surface_screen.hpp" "src/gfx/texture.cpp" "src/gfx/texture.hpp" "src/gfx/texture_2d.cpp" "src/gfx/texture_2d.hpp" "src/gfx/texture_3d.cpp" "src/gfx/texture_3d.hpp" "src/gfx/triangle.hpp" "src/gfx/uniform.hpp" "src/gfx/volume.cpp" "src/gfx/volume.hpp" "src/gfx/volume_base.cpp" "src/gfx/volume_base.hpp" "src/math/generic.hpp" "src/math/mat.hpp" "src/math/quat.hpp" "src/math/random.cpp" "src/math/random.hpp" "src/math/rect.hpp" "src/math/vec.hpp" "src/snd/audio_device.cpp" "src/snd/audio_device.hpp" "src/snd/generic.hpp" "src/snd/sample.cpp" "src/snd/sample.hpp" "src/snd/sample_loader.hpp" "src/snd/snd_generic.cpp" "src/snd/source.cpp" "src/snd/source.hpp" "src/snd/stream.cpp" "src/snd/stream.hpp" "src/snd/source_bank.cpp" "src/snd/source_bank.hpp" "src/thr/dispatch.cpp" "src/thr/dispatch.hpp" "src/thr/generic.hpp" "src/thr/promise.hpp" "src/thr/thr_generic.cpp" "src/thr/thread_storage.cpp" "src/thr/thread_storage.hpp" "src/thr/worker_thread.hpp" "src/ui/console.cpp" "src/ui/console.hpp" "src/ui/console_state.cpp" "src/ui/console_state.hpp" "src/ui/event.hpp" "src/ui/event_key.hpp" "src/ui/event_misc.hpp" "src/ui/event_mouse_button.hpp" "src/ui/event_mouse_motion.hpp" "src/ui/fps_counter.cpp" "src/ui/fps_counter.hpp" "src/ui/generic.hpp" "src/ui/input_line.cpp" "src/ui/input_line.hpp" "src/ui/text_area.cpp" "src/ui/text_area.hpp" "src/ui/text_rect.cpp" "src/ui/text_rect.hpp" "src/ui/text_row.cpp" "src/ui/text_row.hpp" "src/ui/text_word.cpp" "src/ui/text_word.hpp" "src/ui/ui_generic.cpp" "src/ui/ui_stack.cpp" "src/ui/ui_stack.hpp" "src/ui/ui_state.cpp" "src/ui/ui_state.hpp")
@@ -38,6 +37,8 @@ endif()
 add_executable(orbital_bombardment ${BASE_SRC} ${PROGRAM_SRC})
 if(${MSVC})
   target_link_libraries(orbital_bombardment "WINMM")
+  target_link_libraries(orbital_bombardment ${OPENGL_gl_LIBRARY})
+  target_link_libraries(orbital_bombardment ${OPENGL_glu_LIBRARY})
   target_link_libraries(orbital_bombardment debug ${GLEW_LIBRARY_DEBUG})
   target_link_libraries(orbital_bombardment debug ${JPEG_LIBRARY_DEBUG})
   target_link_libraries(orbital_bombardment debug ${OGG_LIBRARY_DEBUG})
@@ -51,7 +52,6 @@ else()
   target_link_libraries(orbital_bombardment ${BOOST_SYSTEM_LIBRARY})
   target_link_libraries(orbital_bombardment ${BOOST_THREAD_LIBRARY})
 endif()
-#target_link_libraries(orbital_bombardment ${OPENGL_gl_LIBRARY})
 target_link_libraries(orbital_bombardment general ${GLEW_LIBRARY})
 target_link_libraries(orbital_bombardment general ${JPEG_LIBRARY})
 target_link_libraries(orbital_bombardment general ${OGG_LIBRARY})
